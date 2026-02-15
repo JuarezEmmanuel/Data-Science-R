@@ -1,0 +1,118 @@
+---
+title: "Manipulacion de Datos con R"
+author: "Juarez Emmanuel"
+date: "2026-02-15"
+output: html_document
+---
+
+```{r}
+data("airquality")
+```
+```{r}
+airquality
+```
+```{r}
+summary(airquality)
+```
+# Crear Filtros 
+
+## Seleccion mediante un vector logico 
+
+```{r}
+selector <- airquality$Month == 5
+mayo <- airquality[selector,]
+
+junio <- airquality[airquality$Month==6,]
+
+mayo
+junio 
+```
+# Funcion Subset ()
+
+> subset(x=, subset, select),
+
+Los parametros de esta funcion son:
+
+- `x` indica el nombre del DataFrame al que queremos aplicar el filtro 
+- `subset` es una explesion logica que indica las filas que queremos conservar 
+- `select` es el vector indicando el nombre de las columnas que queremos conservar
+
+```{r}
+julio <- subset(x=airquality,
+                select = c(Month,Day, Temp), # Seleccionamos el grupo de columnas 
+                subset= Month==7) # Seleccionamos las filas desde el mes de julio
+julio
+```
+
+# Seleccion aleatoria 
+
+> sample(x=, size=, replace=)
+
+- `x` Vector de donde obtener la muestra 
+- `size`Tamaño de la muestra seleccionada 
+- `replace` Es un vector logico que indica si la muestra es con reposicion. 
+si es *FALSE* los elementos pueden ser seleccionados una sola vez.
+si es *TRUE* los elementos pueden ser seleccionados repetidas veces. 
+
+```{r}
+sample(x=1:6, size=5, replace= TRUE)
+```
+
+```{R}
+# 1. Calcula el numero total de filas en el DataFrame airquality y almacena ese valor en la variable fila 
+
+filas <- nrow(airquality)
+
+# 2. Genera una muestra aleatoria de indices de fila, seleccionando el 60% de las filas sin reemplazo 
+
+muestra <- sample(x= 1:filas, size= filas * 0.6, replace = FALSE)
+
+# 3. Crea un nuevo DataFrame llamado training, tomando las filas seleccionadas aleatoriamente ( muestra ) del DataFrame original airquality
+
+training <- airquality[muestra,]
+
+muestra
+training
+```
+```{r}
+# Traeme la diferencia de la muestra anterior 
+
+testing <- airquality[-muestra,]
+testing
+```
+
+## Filtrado con un vector logico 
+
+> rbinom(n=, size, prob=)
+
+- `n`numero de observaciones 
+- `size`es el numero de tiradas 
+- `prob`es la probabilidad que tiene el 1 en salir 
+
+En resumen, esta linea de codigo crea un vector de valores binarios donde cada elemento 
+indica si la fila correspondiente en airquality ha sido seleccionada ( con probabilida 0.5)
+o no. Luego este valor se utiliza como indice para seleccionar las filas correspondientes 
+en airquality y formar los conjuntos DatosSeleccion y DatosNoSeleccion.
+
+```{r}
+# 1. Genera una secuencia de numeros binarios (0 y 1) de longitud igual al numero de filas en el DataFrame airquality.
+
+seleccion <- rbinom(n= nrow(airquality), size= 1, prob= 0.5) ==1 
+
+# 2. Crea un nuevo DatFrame llamdo datosSeleccion incluyendo solo las filas donde la condicion en 'seleccion' es verdadera.
+
+datosSeleccion <- airquality[seleccion,]
+
+# 3. Crea un nuevo DataFrame llamado datosNoSeleccion incluyendo solo las filas donde la condicion en 'seleccion' es falsa.
+
+datosNoSeleccion <- airquality[!seleccion,]
+datosSeleccion
+datosNoSeleccion
+
+```
+# Ordenamiento 
+
+> order(x, na. last = TRUE, decreasing = FALSE)
+
+- `x`es una secuencia de valores de un vector 
+
