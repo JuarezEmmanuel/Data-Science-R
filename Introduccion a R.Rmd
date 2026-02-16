@@ -114,5 +114,218 @@ datosNoSeleccion
 
 > order(x, na. last = TRUE, decreasing = FALSE)
 
-- `x`es una secuencia de valores de un vector 
+- `x`es una secuencia de valores de un vector/es. Si presentamos mas de un vector todos ellos deben ser de la misma longitud.
 
+- `decreasing`valores logicos que determinan si el ordenamiento debe realizarse en forma decreciente (TRUE ordena de forma decreciente)
+
+- `na.last`si es *TRUE* los valores faltantes son ordenados ultimos en el ordenamiento.
+si toma valor *=NA* entonces el valor faltante se remueven.
+
+```{r}
+datos <- data.frame(cliente=c(1,2,3,4,5,6, 7),
+                    zona = c(1,1,1,2,2,2, 3),
+                    monto= c(50,200,100,150,350,250, NA))
+
+orden <- order(x=datos$monto, decreasing = TRUE, na.last = TRUE)
+
+datosOrdenados <- datos[orden,]
+
+datosOrdenados
+```
+```{r}
+datos <- data.frame(cliente=c(1,2,3,4,5,6, 7),
+                    zona = c(1,1,1,2,2,2, 3),
+                    monto= c(50,200,100,150,350,250, NA))
+
+orden <- order(x=datos$monto)
+
+datosOrdenados <- datos[orden,]
+
+datosOrdenados
+```
+
+```{r}
+# Excluir las filas que contienen NA
+datosSinNA <- na.omit(datosOrdenados)
+
+# Mostrar el resultado
+print(datosSinNA)
+```
+## ordenar por mas de una variable 
+
+```{r}
+
+# Ordenar los datos primero por la columna 'zona'de manera ascendente (F) y luego por la columna 'monto' de manera descendiente (T).
+
+# Los valores NA se colocaran al final debido a 'na,last = NA'.
+
+orden <- order(datos$zona, datos$monto, decreasing = c(F,T), na.last = NA)
+
+datosOrdenados <- datos[orden,]
+
+datosOrdenados
+```
+
+
+# Variables condicionales. Uso de la funcion ifelse()
+
+> ifelse(condicion, valor_si_verdadero, valor_si_falso) 77.88
+
+```{r}
+# Calcular la media de la columna 'Temp' en el dataFrame 'airquality' y almacenar el resultado en la variable 'media'
+media <- mean(x = airquality$Temp)
+
+# imprime el valor de la media calculada
+print(media)
+
+# Crea una columna llamada 'Mayor' en el dataFrame 'airquality' que tiene 1 si el valor de 'Temp' es mayor que la media, y 0 en caso contrario.
+airquality$mayor <- ifelse(airquality$Temp > media, 1, 0)
+
+airquality
+```
+# cuidado con los missing
+
+```{r}
+# calcula la media de la columna 'Ozone' en el dataFrame 'airquality' y almacena el resultado en la variable 'mediaOzono'.
+mediaOzono <- mean(x = airquality$Ozone)
+
+# calcula la media de la columna 'Ozone' en el dataFrame 'airquality, ignorando los valores NA, y almacena el resultado en la variable 'mediaOzono'.
+mediaOzono <- mean(x = airquality$Ozone, na.rm = TRUE)
+
+# Crea una columna llamada ' marorOzono ' en el dataFrame 'airquality' que tiene 1 si el valor de 'Ozone' es mayor que la media, y 0 en caso contrario.
+airquality$mayorOzono <- ifelse(airquality$Ozone >mediaOzono, 1, 0)
+
+airquality$mayorOzono
+```
+
+# Construir resumenes
+
+> aggregate(x = , by = , FUN = )
+
+- `x` indica el nombre del objeto numerico (columna de un dataFrame) calculable para cada grupo. 
+
+- `by`es una lista de variables con las que queremos formar grupo.
+
+- `FUN` es una funcion que queremos aplicar para obtener los resultados.
+
+```{r}
+maximos<- aggregate(x=airquality$Temp, by=list(airquality$Month), FUN=max)
+maximos
+
+prom<- aggregate(x=Ozone~Month, data=airquality, FUN=mean)
+prom
+```
+
+# funcion ave()
+```{r}
+# Convierte airquality$Month a factor si aun no lo es 
+airquality$Month <- factor(airquality$Month)
+
+# Usa la funcion ave() para calcular el maximo de temp por cada valor de Month
+airquality$maximo <- ave(airquality$Temp, airquality$Month, FUN = max)
+airquality$maximo
+```
+
+# Familia tapply 
+
+```{r}
+
+tapply(X = airquality$Temp,  # Vector de datos a ser analizado
+  INDEX = list(airquality$Month, airquality$Day),  # Lista de factores o indices que definen los grupos
+  FUN = mean)  # Funcion a aplicar a cada prupo 
+
+######################
+```{r}
+resultado <- tapply(
+  X = airquality$Temp,
+  INDEX = list(airquality$Month, airquality$Day),
+  FUN = mean,
+  na.rm = TRUE
+)
+
+resultado
+```
+###################################
+
+# Funcion apply x, MARGIN, FUN; ...)
+
+- `X` es la matriz o el DF el cual queremos aplicar calculos.
+
+-`MARGIN`Puede tomar valores 1: para calcular en filas; 2: En columnas.
+
+- `FUN`Indicamos la funcion que queremos aplicar.
+
+- `...`Argumentos adicionales a la funcion que queremos aplicar.
+
+```{r}
+# Crear un DataFrame 'df' con tres columnas: 'salario', 'comision', 'bono'.
+
+df<- data.frame(
+  salario= c(500, 600, 700, 1200),
+  comision= c(300, 100, 100, 0),
+  bomo= c(100, 100, 100, 100)
+)
+# Aplicar la funcion sum() a cada fila del DF, sumando los valores de cada columna
+salarioTotal <- apply(df, MARGIN = 2, FUN = sum)
+salarioTotal
+```
+# Obtener los meses unicos presentes en la columna 'Month' del DF 'airquality'.
+```{r}
+meses <- unique(airquality$Month)
+meses
+```
+# Normalizar variable
+# `sd`normalizar vatiable ( desviacion estandar )
+
+
+```{r}
+airquality$Viento <- (airquality$Wind - mean(airquality$Wind)) / (sd(airquality$Wind))
+airquality$Temperatura <- (airquality$Temp - min(airquality$Temp)) / (sd(airquality$Temp))
+                                                                      
+airquality$Viento
+airquality$Temperatura
+```
+
+
+# Escalar entre 0 y 1 
+```{r}
+# Normaliza la columna 'Wind' en el DF y crea una nueva columna con valores normalizados.
+
+airquality$Viento_ <- (airquality$Wind - min(airquality$Wind)) / (max(airquality$Mind) - min(airquality$Wind))
+
+# Normalizar la columna 'Temp'
+
+airquality$Temperatura_ <- (airquality$Temp - min(airquality$Temp)) / (max(airquality$Temp) - min(airquality$Temp))
+
+airquality$Viento_
+```
+
+```{r}
+
+# Normalizar Wind (0 a 1)
+airquality$Viento_ <-
+  (airquality$Wind - min(airquality$Wind, na.rm = TRUE)) /
+  (max(airquality$Wind, na.rm = TRUE) - min(airquality$Wind, na.rm = TRUE))
+
+# Normalizar Temp (0 a 1)
+airquality$Temperatura_ <-
+  (airquality$Temp - min(airquality$Temp, na.rm = TRUE)) /
+  (max(airquality$Temp, na.rm = TRUE) - min(airquality$Temp, na.rm = TRUE))
+
+# Ver resultados
+airquality$Viento_
+summary(airquality$Viento_)
+summary(airquality$Temperatura_)
+
+```
+
+```{r}
+estandarizado <- function(x){
+  resultado <- (x - mean(x)) / (sd(x))
+  return(resultado) 
+}
+escalado <- function(x){ 
+  resultado <- (x - min(x)) / (max(x)-min(x))
+return(resultado)
+}
+```
