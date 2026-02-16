@@ -329,3 +329,8 @@ escalado <- function(x){
 return(resultado)
 }
 ```
+
+# Valores Faltantes 
+```{r}
+# Identifica las posociones en las que la columna 'Temp' tiene valores ausentes (NA).
+tempAusente <- is.na(airquality$Temp)
