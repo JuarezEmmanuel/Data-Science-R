@@ -34,7 +34,7 @@ junio
 Los parametros de esta funcion son:
 
 - `x` indica el nombre del DataFrame al que queremos aplicar el filtro 
-- `subset` es una explesion logica que indica las filas que queremos conservar 
+- `subset` es una expresión logica que indica las filas que queremos conservar 
 - `select` es el vector indicando el nombre de las columnas que queremos conservar
 
 ```{r}
